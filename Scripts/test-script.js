@@ -11,6 +11,17 @@ const unsplashUrl = unsplashApi + unsplashCount;
 
 let testQuote = '';
 
+/*let fillRandomSizes = (Width, Height) => {
+    Width.push(getRndInteger(250, 750));
+    Height.push(getRndInteger(250, 750));
+    Width.push(1000 - Width[0]);
+    Height.push(Height[0]);
+    Width.push(Width[0]);
+    Height.push(1000 - Height[0]);
+    Width.push(Width[1]);
+    Height.push(Height[2]);
+}*/
+
 let renderQuote = (response) => {
     testQuote = response.quoteText;
 
@@ -21,12 +32,36 @@ let renderQuote = (response) => {
     ctx.font = "30px Arial";
     ctx.fillStyle = 'white';
     ctx.textAlign = "center";
-    ctx.filter = 'brightness(50%) blur(4px)';
+    ctx.filter = 'brightness(50%) blur(1px)';
     const lineHeight = 50;
-    let pic1       = new Image();
+    let pic1 = new Image();
     let pic2 = new Image();
     let pic3 = new Image();
     let pic4 = new Image();
+
+    let picWidth = [];
+    let picHeight = [];
+
+    picWidth.push(getRndInteger(250, 750));
+    picHeight.push(getRndInteger(250, 750));
+    picWidth.push(1000 - picWidth[0]);
+    picHeight.push(picHeight[0]);
+    picWidth.push(picWidth[0]);
+    picHeight.push(1000 - picHeight[0]);
+    picWidth.push(picWidth[1]);
+    picHeight.push(picHeight[2]);
+
+    /*let picParams = [`&w=${picWidth[0]}&h=${picHeight[0]}`,
+        `&w=${picWidth[1]}&h=${picHeight[1]}`,
+        `&w=${picWidth[2]}&h=${picHeight[2]}`,
+        `&w=${picWidth[3]}&h=${picHeight[3]}`];*/
+
+    let picParams = [];
+    picParams.push('&w=' + picWidth[0] + '&h=' + picHeight[0]);
+    picParams.push('&w=' + picWidth[1] + '&h=' + picHeight[1]);
+    picParams.push('&w=' + picWidth[2] + '&h=' + picHeight[2]);
+    picParams.push('&w=' + picWidth[3] + '&h=' + picHeight[3]);
+
 
     const slicedQuote = testQuote.split(" ");
     let collage = [pic1, pic2, pic3, pic4];
@@ -38,10 +73,10 @@ let renderQuote = (response) => {
     xhr.responseType = "json";
     xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            pic1.src = xhr.response[0].urls.regular; //поменять на цикл
-            pic2.src = xhr.response[1].urls.regular;
-            pic3.src = xhr.response[2].urls.regular;
-            pic4.src = xhr.response[3].urls.regular;
+            pic1.src = xhr.response[0].urls.raw + picParams[0] + "&fit=crop" + "&crop=left,right,top"; //поменять на цикл
+            pic2.src = xhr.response[1].urls.raw + picParams[1] + "&fit=crop" + "&crop=left,right,top";
+            pic3.src = xhr.response[2].urls.raw + picParams[2] + "&fit=crop" + "&crop=left,right,top";
+            pic4.src = xhr.response[3].urls.raw + picParams[3] + "&fit=crop" + "&crop=left,right,top";
         }
     }
 
@@ -54,9 +89,9 @@ let renderQuote = (response) => {
         i++;
         if(i === counter) {
             ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, 500, 0);
-            ctx.drawImage(pic3, 0, 500);
-            ctx.drawImage(pic4, 500, 500);
+            ctx.drawImage(pic2, picWidth[0], 0);
+            ctx.drawImage(pic3, 0, picHeight[0]);
+            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
             ctx.filter = 'brightness(100%)';
             for(let j = 0; j < slicedQuote.length; j += 4){
                 quoteLine = "";
@@ -79,9 +114,9 @@ let renderQuote = (response) => {
         i++;
         if(i === counter) {
             ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, 500, 0);
-            ctx.drawImage(pic3, 0, 500);
-            ctx.drawImage(pic4, 500, 500);
+            ctx.drawImage(pic2, picWidth[0], 0);
+            ctx.drawImage(pic3, 0, picHeight[0]);
+            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
             ctx.filter = 'brightness(100%)';
             for(let j = 0; j < slicedQuote.length; j += 4){
                 quoteLine = "";
@@ -104,9 +139,9 @@ let renderQuote = (response) => {
         i++;
         if(i === counter) {
             ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, 500, 0);
-            ctx.drawImage(pic3, 0, 500);
-            ctx.drawImage(pic4, 500, 500);
+            ctx.drawImage(pic2, picWidth[0], 0);
+            ctx.drawImage(pic3, 0, picHeight[0]);
+            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
             ctx.filter = 'brightness(100%)';
             for(let j = 0; j < slicedQuote.length; j += 4){
                 quoteLine = "";
@@ -129,9 +164,9 @@ let renderQuote = (response) => {
         i++;
         if(i === counter) {
             ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, 500, 0);
-            ctx.drawImage(pic3, 0, 500);
-            ctx.drawImage(pic4, 500, 500);
+            ctx.drawImage(pic2, picWidth[0], 0);
+            ctx.drawImage(pic3, 0, picHeight[0]);
+            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
             ctx.filter = 'brightness(100%)';
             for(let j = 0; j < slicedQuote.length; j += 4){
                 quoteLine = "";
@@ -147,6 +182,10 @@ let renderQuote = (response) => {
 
 
     }, false);
+}
+
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
 }
 
 const getQuote = document.createElement('script');
