@@ -30,7 +30,7 @@ let renderQuote = (response) => {
     let pic4 = new Image();
     let collage = [pic1, pic2, pic3, pic4];
 
-    for(let i = 0; i < collage.length; i++) {
+    for (let i = 0; i < collage.length; i++) {
         collage[i].crossOrigin = 'Anonymous';
     }
 
@@ -57,8 +57,7 @@ let renderQuote = (response) => {
     xhr.responseType = 'json';
     xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            for(let i = 0; i < collage.length; i++)
-            {
+            for (let i = 0; i < collage.length; i++) {
                 collage[i].src = xhr.response[i].urls.raw + picParams[i];
             }
         }
@@ -77,20 +76,20 @@ let renderQuote = (response) => {
             let line = 0;
             let quoteLine = "";
             readiness++;
-            if(readiness === counter) {
+            if (readiness === counter) {
                 ctx.drawImage(pic1, 0, 0);
                 ctx.drawImage(pic2, picWidth[0], 0);
                 ctx.drawImage(pic3, 0, picHeight[0]);
                 ctx.drawImage(pic4, picWidth[0], picHeight[0]);
                 ctx.filter = 'brightness(100%)';
-                for(let j = 0; j < slicedQuote.length; j += 4){
+                for (let j = 0; j < slicedQuote.length; j += 4) {
                     quoteLine = '';
-                    for(let k = j; k < j+4; k++){
+                    for (let k = j; k < j + 4; k++) {
                         if (slicedQuote[k] !== undefined) {
                             quoteLine = quoteLine + " " + slicedQuote[k];
                         }
                     }
-                    ctx.fillText(quoteLine, collageCanvas.width/2, collageCanvas.height*2/5 + (lineHeight * line));
+                    ctx.fillText(quoteLine, collageCanvas.width / 2, collageCanvas.height * 2 / 5 + (lineHeight * line));
                     line += 1;
                 }
             }
@@ -107,7 +106,7 @@ let renderQuote = (response) => {
 };
 
 function getRndInteger(min, max) {
-    return Math.floor(Math.random() * (max - min) ) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 const getQuote = document.createElement('script');
@@ -116,11 +115,12 @@ document.getElementsByTagName('head')[0].appendChild(getQuote);
 
 const getCanvas = document.createElement('canvas');
 getCanvas.id = 'collageCanvas';
+getCanvas.setAttribute('style', 'display: block; margin: 10px auto');
 document.body.appendChild(getCanvas);
 
 let downloadContent = document.createElement('a');
 downloadContent.id = 'downloadButton';
-downloadContent.setAttribute('style', 'display: block; webkitAppearance: button; cursor: pointer; width: 200px; marginTop: 20px; padding: 10px;');
+downloadContent.setAttribute('style', 'display: block; -webkit-appearance: button; cursor: pointer; width: 200px; margin: 20px auto 20px auto; padding: 10px; text-align: center;');
 downloadContent.innerHTML = 'Download collage';
 downloadContent.textDecoration = 'none';
 document.body.appendChild(downloadContent);
