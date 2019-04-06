@@ -1,4 +1,4 @@
-const quoteUrl = 'http://api.forismatic.com/api/1.0/?';
+const quoteUrl = 'https://api.forismatic.com/api/1.0/?';
 const quoteMethod = 'method=getQuote';
 const quoteFormat = '&format=jsonp';
 const quoteLang = '&lang=ru';
@@ -19,7 +19,7 @@ let renderQuote = (response) => {
     let ctx = collageCanvas.getContext('2d'); // Контекст
     collageCanvas.height = 1000;
     collageCanvas.width = 1000;
-    ctx.font = '40px Arial';
+    ctx.font = '40px Helvetica';
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.filter = 'brightness(50%) blur(1px)';
@@ -72,7 +72,7 @@ let renderQuote = (response) => {
     let readiness = 0;
 
     for (let i = 0; i < collage.length; i++) {
-        collage[i].addEventListener('load', function () { //написать покороче?
+        collage[i].addEventListener('load',  () => { //написать покороче?
             let line = 0;
             let quoteLine = "";
             readiness++;
@@ -120,7 +120,7 @@ document.body.appendChild(getCanvas);
 
 let downloadContent = document.createElement('a');
 downloadContent.id = 'downloadButton';
-downloadContent.setAttribute('style', 'display: block; -webkit-appearance: button; cursor: pointer; width: 200px; margin: 20px auto 20px auto; padding: 10px; text-align: center;');
+downloadContent.setAttribute('style', 'font-family: "Open Sans"; display: block; -webkit-appearance: button; cursor: pointer; width: 200px; margin: 20px auto 20px auto; padding: 10px; text-align: center;');
 downloadContent.innerHTML = 'Download collage';
 downloadContent.textDecoration = 'none';
 document.body.appendChild(downloadContent);
