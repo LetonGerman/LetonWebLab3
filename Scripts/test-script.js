@@ -1,47 +1,38 @@
-const url = 'http://api.forismatic.com/api/1.0/?';
-const queryMethod = 'method=getQuote';
-const queryFormat = '&format=jsonp';
-const queryLang = '&lang=ru';
-const queryFunc = '&jsonp=renderQuote';
-const queryUrl = url + queryMethod + queryLang + queryFormat + queryFunc;
+const quoteUrl = 'http://api.forismatic.com/api/1.0/?';
+const quoteMethod = 'method=getQuote';
+const quoteFormat = '&format=jsonp';
+const quoteLang = '&lang=ru';
+const quoteCallback = '&jsonp=renderQuote';
+const quoteApi = `${quoteUrl}${quoteMethod}${quoteLang}${quoteFormat}${quoteCallback}`;
 
-const unsplashApi = 'https://api.unsplash.com/photos/random/?client_id=df5645cdbcc4e0eac51679ce54433f724057873d9bb802fdd22b094e2621e939';
+const unsplashUrl = 'https://api.unsplash.com/photos/random/?';
+const unsplashKey = 'client_id=df5645cdbcc4e0eac51679ce54433f724057873d9bb802fdd22b094e2621e939';
 const unsplashCount = '&count=4';
-const unsplashUrl = unsplashApi + unsplashCount;
+const unsplashApi = `${unsplashUrl}${unsplashKey}${unsplashCount}`;
 
-let testQuote = '';
-
-/*let fillRandomSizes = (Width, Height) => {
-    Width.push(getRndInteger(250, 750));
-    Height.push(getRndInteger(250, 750));
-    Width.push(1000 - Width[0]);
-    Height.push(Height[0]);
-    Width.push(Width[0]);
-    Height.push(1000 - Height[0]);
-    Width.push(Width[1]);
-    Height.push(Height[2]);
-}*/
+let fullQuote = '';
 
 let renderQuote = (response) => {
-    testQuote = response.quoteText;
+    fullQuote = response.quoteText;
 
-    let collageCanvas = document.getElementById("collageCanvas");
+    let collageCanvas = document.getElementById('collageCanvas');
     let ctx = collageCanvas.getContext('2d'); // Контекст
     collageCanvas.height = 1000;
     collageCanvas.width = 1000;
-    ctx.font = "30px Arial";
+    ctx.font = '40px Arial';
     ctx.fillStyle = 'white';
-    ctx.textAlign = "center";
+    ctx.textAlign = 'center';
     ctx.filter = 'brightness(50%) blur(1px)';
-    const lineHeight = 50;
+    const lineHeight = 55;
     let pic1 = new Image();
     let pic2 = new Image();
     let pic3 = new Image();
     let pic4 = new Image();
-    pic1.crossOrigin = 'Anonymous';
-    pic2.crossOrigin = 'Anonymous';
-    pic3.crossOrigin = 'Anonymous';
-    pic4.crossOrigin = 'Anonymous';
+    let collage = [pic1, pic2, pic3, pic4];
+
+    for(let i = 0; i < collage.length; i++) {
+        collage[i].crossOrigin = 'Anonymous';
+    }
 
     let picWidth = [];
     let picHeight = [];
@@ -55,154 +46,73 @@ let renderQuote = (response) => {
     picWidth.push(picWidth[1]);
     picHeight.push(picHeight[2]);
 
-    /*let picParams = [`&w=${picWidth[0]}&h=${picHeight[0]}`,
-        `&w=${picWidth[1]}&h=${picHeight[1]}`,
-        `&w=${picWidth[2]}&h=${picHeight[2]}`,
-        `&w=${picWidth[3]}&h=${picHeight[3]}`];*/
+    let Params = ['', '', '', ''];
 
-    let picParams = [];
-    picParams.push('&w=' + picWidth[0] + '&h=' + picHeight[0]);
-    picParams.push('&w=' + picWidth[1] + '&h=' + picHeight[1]);
-    picParams.push('&w=' + picWidth[2] + '&h=' + picHeight[2]);
-    picParams.push('&w=' + picWidth[3] + '&h=' + picHeight[3]);
-
-
-    const slicedQuote = testQuote.split(" ");
-    let collage = [pic1, pic2, pic3, pic4];
-
-    const counter = 4;
-    let i = 0;
+    let picParams = Params.map((value, index) => {
+        value = `&w=${picWidth[index]}&h=${picHeight[index]}&fit=crop&crop=left,right,top`;
+        return value;
+    });
 
     const xhr = new XMLHttpRequest();
-    xhr.responseType = "json";
+    xhr.responseType = 'json';
     xhr.onreadystatechange = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            pic1.src = xhr.response[0].urls.raw + picParams[0] + "&fit=crop" + "&crop=left,right,top"; //поменять на цикл
-            pic2.src = xhr.response[1].urls.raw + picParams[1] + "&fit=crop" + "&crop=left,right,top";
-            pic3.src = xhr.response[2].urls.raw + picParams[2] + "&fit=crop" + "&crop=left,right,top";
-            pic4.src = xhr.response[3].urls.raw + picParams[3] + "&fit=crop" + "&crop=left,right,top";
+            for(let i = 0; i < collage.length; i++)
+            {
+                collage[i].src = xhr.response[i].urls.raw + picParams[i];
+            }
         }
-    }
+    };
 
-    xhr.open('GET', unsplashUrl);
+    xhr.open('GET', unsplashApi);
     xhr.send();
 
+    const slicedQuote = fullQuote.split(" ");
 
+    const counter = 4;
+    let readiness = 0;
 
-    pic1.addEventListener('load', function () { //написать покороче?
-        let line = 0;
-        let quoteLine = "";
-        i++;
-        if(i === counter) {
-            ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, picWidth[0], 0);
-            ctx.drawImage(pic3, 0, picHeight[0]);
-            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
-            ctx.filter = 'brightness(100%)';
-            for(let j = 0; j < slicedQuote.length; j += 4){
-                quoteLine = "";
-                for(let k = j; k < j+4; k++){
-                    if (slicedQuote[k] !== undefined) {
-                        quoteLine = quoteLine + " " + slicedQuote[k];
+    for (let i = 0; i < collage.length; i++) {
+        collage[i].addEventListener('load', function () { //написать покороче?
+            let line = 0;
+            let quoteLine = "";
+            readiness++;
+            if(readiness === counter) {
+                ctx.drawImage(pic1, 0, 0);
+                ctx.drawImage(pic2, picWidth[0], 0);
+                ctx.drawImage(pic3, 0, picHeight[0]);
+                ctx.drawImage(pic4, picWidth[0], picHeight[0]);
+                ctx.filter = 'brightness(100%)';
+                for(let j = 0; j < slicedQuote.length; j += 4){
+                    quoteLine = '';
+                    for(let k = j; k < j+4; k++){
+                        if (slicedQuote[k] !== undefined) {
+                            quoteLine = quoteLine + " " + slicedQuote[k];
+                        }
                     }
+                    ctx.fillText(quoteLine, collageCanvas.width/2, collageCanvas.height*2/5 + (lineHeight * line));
+                    line += 1;
                 }
-                ctx.fillText(quoteLine, collageCanvas.width/2, collageCanvas.height*2/5 + (lineHeight * line));
-                line += 1;
             }
-        }
 
 
-    }, false);
+        }, false);
+    }
 
-    pic2.addEventListener('load', function () {
-        let line = 0;
-        let quoteLine = "";
-        i++;
-        if(i === counter) {
-            ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, picWidth[0], 0);
-            ctx.drawImage(pic3, 0, picHeight[0]);
-            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
-            ctx.filter = 'brightness(100%)';
-            for(let j = 0; j < slicedQuote.length; j += 4){
-                quoteLine = "";
-                for(let k = j; k < j+4; k++){
-                    if (slicedQuote[k] !== undefined) {
-                        quoteLine = quoteLine + " " + slicedQuote[k];
-                    }
-                }
-                ctx.fillText(quoteLine, collageCanvas.width/2, collageCanvas.height*2/5 + (lineHeight * line));
-                line += 1;
-            }
-        }
-
-
-    }, false);
-
-    pic3.addEventListener('load', function () {
-        let line = 0;
-        let quoteLine = "";
-        i++;
-        if(i === counter) {
-            ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, picWidth[0], 0);
-            ctx.drawImage(pic3, 0, picHeight[0]);
-            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
-            ctx.filter = 'brightness(100%)';
-            for(let j = 0; j < slicedQuote.length; j += 4){
-                quoteLine = "";
-                for(let k = j; k < j+4; k++){
-                    if (slicedQuote[k] !== undefined) {
-                        quoteLine = quoteLine + " " + slicedQuote[k];
-                    }
-                }
-                ctx.fillText(quoteLine, collageCanvas.width/2, collageCanvas.height*2/5 + (lineHeight * line));
-                line += 1;
-            }
-        }
-
-
-    }, false);
-
-    pic4.addEventListener('load', function () {
-        let line = 0;
-        let quoteLine = "";
-        i++;
-        if(i === counter) {
-            ctx.drawImage(pic1, 0, 0);
-            ctx.drawImage(pic2, picWidth[0], 0);
-            ctx.drawImage(pic3, 0, picHeight[0]);
-            ctx.drawImage(pic4, picWidth[0], picHeight[0]);
-            ctx.filter = 'brightness(100%)';
-            for(let j = 0; j < slicedQuote.length; j += 4){
-                quoteLine = "";
-                for(let k = j; k < j+4; k++){
-                    if (slicedQuote[k] !== undefined) {
-                        quoteLine = quoteLine + " " + slicedQuote[k];
-                    }
-                }
-                ctx.fillText(quoteLine, collageCanvas.width/2, collageCanvas.height*2/5 + (lineHeight * line));
-                line += 1;
-            }
-        }
-
-
-    }, false);
-
-    downloadContent.addEventListener('click', (event) => {
+    downloadContent.addEventListener('click', () => {
         downloadContent.href = collageCanvas.toDataURL();
-        downloadContent.download = "Collage.png";
+        downloadContent.download = 'Collage.png';
     }, false)
 
-}
+};
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
 
 const getQuote = document.createElement('script');
-getQuote.src = queryUrl;
-document.getElementsByTagName("head")[0].appendChild(getQuote);
+getQuote.src = quoteApi;
+document.getElementsByTagName('head')[0].appendChild(getQuote);
 
 const getCanvas = document.createElement('canvas');
 getCanvas.id = 'collageCanvas';
@@ -210,12 +120,7 @@ document.body.appendChild(getCanvas);
 
 let downloadContent = document.createElement('a');
 downloadContent.id = 'downloadButton';
-downloadContent.style.display = 'block';
-downloadContent.style.webkitAppearance = 'button';
-downloadContent.style.cursor = 'pointer';
-downloadContent.style.width = '200px';
-downloadContent.style.marginTop = '20px';
-downloadContent.style.padding = '10px';
+downloadContent.setAttribute('style', 'display: block; webkitAppearance: button; cursor: pointer; width: 200px; marginTop: 20px; padding: 10px;');
 downloadContent.innerHTML = 'Download collage';
 downloadContent.textDecoration = 'none';
 document.body.appendChild(downloadContent);
