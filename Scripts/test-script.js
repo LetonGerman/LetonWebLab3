@@ -38,6 +38,10 @@ let renderQuote = (response) => {
     let pic2 = new Image();
     let pic3 = new Image();
     let pic4 = new Image();
+    pic1.crossOrigin = 'Anonymous';
+    pic2.crossOrigin = 'Anonymous';
+    pic3.crossOrigin = 'Anonymous';
+    pic4.crossOrigin = 'Anonymous';
 
     let picWidth = [];
     let picHeight = [];
@@ -82,6 +86,8 @@ let renderQuote = (response) => {
 
     xhr.open('GET', unsplashUrl);
     xhr.send();
+
+
 
     pic1.addEventListener('load', function () { //написать покороче?
         let line = 0;
@@ -182,6 +188,12 @@ let renderQuote = (response) => {
 
 
     }, false);
+
+    downloadContent.addEventListener('click', (event) => {
+        downloadContent.href = collageCanvas.toDataURL();
+        downloadContent.download = "Collage.png";
+    }, false)
+
 }
 
 function getRndInteger(min, max) {
@@ -195,4 +207,16 @@ document.getElementsByTagName("head")[0].appendChild(getQuote);
 const getCanvas = document.createElement('canvas');
 getCanvas.id = 'collageCanvas';
 document.body.appendChild(getCanvas);
+
+let downloadContent = document.createElement('a');
+downloadContent.id = 'downloadButton';
+downloadContent.style.display = 'block';
+downloadContent.style.webkitAppearance = 'button';
+downloadContent.style.cursor = 'pointer';
+downloadContent.style.width = '200px';
+downloadContent.style.marginTop = '20px';
+downloadContent.style.padding = '10px';
+downloadContent.innerHTML = 'Download collage';
+downloadContent.textDecoration = 'none';
+document.body.appendChild(downloadContent);
 
